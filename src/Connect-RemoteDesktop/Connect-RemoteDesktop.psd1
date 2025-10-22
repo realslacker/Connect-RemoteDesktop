@@ -12,7 +12,7 @@
 RootModule = 'Connect-RemoteDesktop.psm1'
 
 # Version number of this module.
-ModuleVersion = '22.11.23.1003'
+ModuleVersion = '25.10.21.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -51,7 +51,7 @@ PowerShellVersion = '5.0'
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @()
+RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
