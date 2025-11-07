@@ -12,7 +12,7 @@
 RootModule = 'Connect-RemoteDesktop.psm1'
 
 # Version number of this module.
-ModuleVersion = '25.10.21.2000'
+ModuleVersion = '25.11.7.1139'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
