@@ -259,8 +259,9 @@ function Connect-RemoteDesktop {
     param(
         
         [Parameter(
-            ParameterSetName = 'ComputerName',
             Mandatory        = $true,
+            Position         = 0,
+            ParameterSetName = 'ComputerName',
             HelpMessage      = "Specifies the name or IP address (and optional port) of the remote computer that you want to connect to."
         )]
         [Alias('V', 'FullAddress')]
@@ -899,10 +900,10 @@ function Connect-RemoteDesktop {
         $ConnectionFile,
 
         [Parameter(
-            HelpMessage = 'Automatically trust hosts and do not prompt to connect.'
+            HelpMessage      = 'Do not automatically trust the host certificate when connecting to a new host.'
         )]
         [switch]
-        $AutoTrustHosts,
+        $DisableAutoTrust,
         
         [Parameter(
             HelpMessage      = 'Credential to use for the remote desktop connection.'
@@ -988,12 +989,16 @@ function Connect-RemoteDesktop {
     Write-Verbose ( 'Connection File: {0}' -f $ConnectionFile.FullName )
 
     # suppress connection warnings
-    if ( $AutoTrustHosts -and $PSBoundParameters.ContainsKey('ComputerName') ) {
+    if ( -not $DisableAutoTrust -and $PSBoundParameters.ContainsKey('ComputerName') ) {
         if ( $PSBoundParameters.ContainsKey('Gateway') ) {
+            New-Item -Path 'HKCU:\Software\Microsoft\Terminal Server Client\LocalDevices' -Force > $null
             New-ItemProperty -Path 'HKCU:\Software\Microsoft\Terminal Server Client\LocalDevices' -Name "${ComputerName};${Gateway}" -Type DWord -Value 0xffffffff -Force > $null
         } else {
+            New-ItemProperty -Path 'HKCU:\Software\Microsoft\Terminal Server Client\LocalDevices' -Name "${ComputerName}" -Type DWord -Value 0xffffffff -Force > $null
             if ( $Certificate = Get-HostCertificate @PSBoundParameters ) {
+                New-Item -Path "HKCU:\Software\Microsoft\Terminal Server Client\Servers\$ComputerName" -Force > $null
                 New-ItemProperty -Path "HKCU:\Software\Microsoft\Terminal Server Client\Servers\$ComputerName" -Name CertHash -Type Binary -Value $Certificate.GetCertHash('SHA256') -Force > $null
+                New-ItemProperty -Path "HKCU:\Software\Microsoft\Terminal Server Client\Servers\$ComputerName" -Name UsernameHint -Type String -Value $Credential.UserName -Force > $null
             }
         }
     }
